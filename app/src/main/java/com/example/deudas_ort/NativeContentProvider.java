@@ -1,89 +1,149 @@
 package com.example.deudas_ort;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.content.ContentResolver;
 import android.database.Cursor;
-
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Build;
 import android.provider.ContactsContract;
-
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Button;
-import android.widget.ArrayAdapter;
-import java.util.List;
+import android.widget.SearchView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class NativeContentProvider extends Activity {
-    private ListView lstNames;
 
-    // Request code for READ_CONTACTS. It can be any number > 0.
-    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+    // ArrayList
+    ArrayList<SelectUser> selectUsers;
+    List<SelectUser> temp;
+    // Contact List
+    ListView listView;
+    // Cursor to load contacts list
+    Cursor phones, email;
 
-    /** Called when the activity is first created. */
+    // Pop up
+    ContentResolver resolver;
+    SearchView search;
+    SelectUserAdapter adapter;
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nativecontentlayout);
 
-        Button view = (Button)findViewById(R.id.viewButton);
-        super.onCreate(savedInstanceState);
+        selectUsers = new ArrayList<SelectUser>();
+        resolver = this.getContentResolver();
+        listView = (ListView) findViewById(R.id.contacts_list);
 
-        // Find the list view
-        this.lstNames = (ListView) findViewById(R.id.lstNames);
+        phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+        LoadContact loadContact = new LoadContact();
+        loadContact.execute();
 
-        view.setOnClickListener(new OnClickListener() {
-            public void onClick(View v){
-                displayContacts();
-                Log.i("NativeContentProvider", "Completed Displaying Contact list");
+        search = (SearchView) findViewById(R.id.searchView);
+
+        //*** setOnQueryTextListener ***
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // TODO Auto-generated method stub
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // TODO Auto-generated method stub
+                adapter.filter(newText);
+                return false;
             }
         });
     }
 
-    private void displayContacts() {
-        // Check the SDK version and whether the permission is already granted or not.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
-            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
-        } else {
-            // Android version is lesser than 6.0 or the permission is already granted.
-            List<String> contacts = getContactNames();
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, contacts);
-            lstNames.setAdapter(adapter);
+    // Load data on background
+    class LoadContact extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // Get Contact list from Phone
+
+            if (phones != null) {
+                Log.e("count", "" + phones.getCount());
+                if (phones.getCount() == 0) {
+                    Toast.makeText(NativeContentProvider.this, "No contacts in your contact list.", Toast.LENGTH_LONG).show();
+                }
+
+                while (phones.moveToNext()) {
+                    Bitmap bit_thumb = null;
+                    String id = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+                    String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                    String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    String EmailAddr = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA2));
+                    String image_thumb = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI));
+                    try {
+                        if (image_thumb != null) {
+                            bit_thumb = MediaStore.Images.Media.getBitmap(resolver, Uri.parse(image_thumb));
+                        } else {
+                            Log.e("No Image Thumb", "--------------");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    SelectUser selectUser = new SelectUser();
+                    selectUser.setThumb(bit_thumb);
+                    selectUser.setName(name);
+                    selectUser.setPhone(phoneNumber);
+                    selectUser.setEmail(id);
+                    selectUser.setCheckedBox(false);
+                    selectUsers.add(selectUser);
+                }
+            } else {
+                Log.e("Cursor close 1", "----------------");
+            }
+            //phones.close();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            adapter = new SelectUserAdapter(selectUsers, NativeContentProvider.this);
+            listView.setAdapter(adapter);
+
+            // Select item on listclick
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    Log.e("search", "here---------------- listener");
+
+                    SelectUser data = selectUsers.get(i);
+                }
+            });
+
+            listView.setFastScrollEnabled(true);
         }
     }
 
-    /**
-     * Read the name of all the contacts.
-     *
-     * @return a list of names.
-     */
-    private List<String> getContactNames() {
-        List<String> contacts = new ArrayList<>();
-        // Get the ContentResolver
-        ContentResolver cr = getContentResolver();
-        // Get the Cursor of all the contacts
-        Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-
-        // Move the cursor to first. Also check whether the cursor is empty or not.
-        if (cursor.moveToFirst()) {
-            // Iterate through the cursor
-            do {
-                // Get the contacts name
-                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                contacts.add(name);
-            } while (cursor.moveToNext());
-        }
-        // Close the cursor
-        cursor.close();
-
-        return contacts;
+    @Override
+    protected void onStop() {
+        super.onStop();
+        phones.close();
     }
 }

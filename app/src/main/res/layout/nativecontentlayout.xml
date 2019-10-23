@@ -4,11 +4,6 @@ android:orientation="vertical"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
     >
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/hello"
-        />
     <Button
         android:text="@string/viewButton"
         android:id="@+id/viewButton"
@@ -17,8 +12,35 @@ android:layout_height="fill_parent"
         android:layout_gravity="center_horizontal">
     </Button>
 
-    <ListView
-        android:id="@+id/lstNames"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:background="#5b74a8"
+        android:id="@+id/frag">
+
+        <TextView
+            android:id="@+id/srchHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search.."
+            android:textSize="16dp"
+            android:textColor="#000"
+            android:layout_gravity="center" />
+
+        <SearchView
+            android:background="#5b74a8"
+            android:padding="8dp"
+            android:id="@+id/searchView"
+            android:drawableLeft="@android:drawable/ic_menu_search"
+            android:layout_width="wrap_content"
+            android:singleLine="true"
+            android:layout_gravity="right"
+            android:layout_height="wrap_content"></SearchView>
+    </FrameLayout>
+
+    <ListView
+        android:layout_below="@+id/frag"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/contacts_list"></ListView>
 </LinearLayout>
