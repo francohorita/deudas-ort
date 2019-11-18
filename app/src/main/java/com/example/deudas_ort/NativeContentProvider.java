@@ -1,17 +1,24 @@
 package com.example.deudas_ort;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -22,6 +29,11 @@ import java.util.List;
 
 
 public class NativeContentProvider extends Activity {
+
+    private ListView lstNames;
+
+    // Request code for READ_CONTACTS. It can be any number > 0.
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 
     // ArrayList
     ArrayList<SelectUser> selectUsers;
@@ -39,35 +51,62 @@ public class NativeContentProvider extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.nativecontentlayout);
+        getContacts();
 
-        selectUsers = new ArrayList<SelectUser>();
-        resolver = this.getContentResolver();
-        listView = (ListView) findViewById(R.id.contacts_list);
+        Button view = (Button)findViewById(R.id.viewButton);
 
-        phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
-        LoadContact loadContact = new LoadContact();
-        loadContact.execute();
+//        view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v){
+//                //Toast.makeText(NativeContentProvider.this, "Click.", Toast.LENGTH_LONG).show();
+//                getContacts();
+//                Log.i("NativeContentProvider", "Completed Displaying Contact list");
+//            }
+//        });
+    }
 
-        search = (SearchView) findViewById(R.id.searchView);
+    public void getContacts(View view){
+        getContacts();
+    }
+    public void getContacts() {
+        //Toast.makeText(NativeContentProvider.this, "Click.", Toast.LENGTH_LONG).show();
+        // Check the SDK version and whether the permission is already granted or not.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+        } else {
+            // Android version is lesser than 6.0 or the permission is already granted.
 
-        //*** setOnQueryTextListener ***
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            setContentView(R.layout.nativecontentlayout);
 
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // TODO Auto-generated method stub
+            selectUsers = new ArrayList<SelectUser>();
+            resolver = this.getContentResolver();
+            listView = (ListView) findViewById(R.id.contacts_list);
 
-                return false;
-            }
+            phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+            LoadContact loadContact = new LoadContact();
+            loadContact.execute();
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // TODO Auto-generated method stub
-                adapter.filter(newText);
-                return false;
-            }
-        });
+            search = (SearchView) findViewById(R.id.searchView);
+
+            //*** setOnQueryTextListener ***
+            search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    // TODO Auto-generated method stub
+
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    // TODO Auto-generated method stub
+                    adapter.filter(newText);
+                    return false;
+                }
+            });
+        }
     }
 
     // Load data on background
@@ -85,7 +124,12 @@ public class NativeContentProvider extends Activity {
             if (phones != null) {
                 Log.e("count", "" + phones.getCount());
                 if (phones.getCount() == 0) {
-                    Toast.makeText(NativeContentProvider.this, "No contacts in your contact list.", Toast.LENGTH_LONG).show();
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(NativeContentProvider.this, "No contacts in your contact list.", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
 
                 while (phones.moveToNext()) {
