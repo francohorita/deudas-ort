@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">This is a sample to showcase the working of a native content provider - here the contacts list</string>
-    <string name="app_name">Content Provider Sample Application</string>
+    <string name="app_name">Deudas ORT</string>
     <string name="viewButton">Refresh contacts</string>
     <string name="createButton">Add Contact</string>
     <string name="updateButton">Modify Contact</string>
