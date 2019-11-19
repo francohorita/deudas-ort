@@ -3,6 +3,7 @@ package com.example.deudas_ort;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -160,6 +161,7 @@ public class NativeContentProvider extends Activity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.e("searchView", "here---------------- listener");
                     SelectUser data = selectUsers.get(i);
+                    navigateToContactInformation();
                 }
             });
 
@@ -171,5 +173,10 @@ public class NativeContentProvider extends Activity {
     protected void onStop() {
         super.onStop();
         contactPhonesCursor.close();
+    }
+
+    public void navigateToContactInformation(){
+        Intent intent = new Intent(this, ContactActivity.class);
+        startActivity(intent);
     }
 }
