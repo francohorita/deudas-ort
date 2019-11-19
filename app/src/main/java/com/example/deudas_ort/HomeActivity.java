@@ -33,6 +33,8 @@ public class HomeActivity extends Activity {
     /** Request code for READ_CONTACTS. It can be any number > 0. */
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public static final String USER_NAME = "USER_NAME";
+    public static final String USER_EMAIL = "USER_EMAIL";
+    public static final String USER_PHONE = "USER_PHONE";
     private ArrayList<SelectUser> selectUsers;
     private ListView contactListView;
     private Cursor contactPhonesCursor;
@@ -178,6 +180,8 @@ public class HomeActivity extends Activity {
     public void navigateToContactInformation(SelectUser userData){
         Intent intent = new Intent(this, ContactActivity.class);
         intent.putExtra(USER_NAME, userData.getName());
+        intent.putExtra(USER_EMAIL, userData.getEmail());
+        intent.putExtra(USER_PHONE, userData.getPhone());
         startActivity(intent);
     }
 }
