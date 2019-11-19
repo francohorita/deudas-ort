@@ -21,6 +21,9 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.example.deudas_ort.data.SelectUser;
+import com.example.deudas_ort.data.SelectUserAdapter;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -130,7 +133,7 @@ public class NativeContentProvider extends Activity {
 
                     SelectUser selectUser = new SelectUser();
 
-                    selectUser.setThumb(bitMap);
+                    selectUser.setBitMap(bitMap);
                     selectUser.setName(name);
                     selectUser.setPhone(phoneNumber);
                     selectUser.setEmail(id);
