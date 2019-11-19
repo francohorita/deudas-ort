@@ -28,13 +28,11 @@ import com.example.deudas_ort.data.SelectUserAdapter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 public class HomeActivity extends Activity {
 
-    /**
-     * Request code for READ_CONTACTS. It can be any number > 0.
-     */
+    /** Request code for READ_CONTACTS. It can be any number > 0. */
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+    public static final String USER_NAME = "USER_NAME";
     private ArrayList<SelectUser> selectUsers;
     private ListView contactListView;
     private Cursor contactPhonesCursor;
@@ -49,9 +47,7 @@ public class HomeActivity extends Activity {
         getContacts();
     }
 
-    /**
-     * Overload needed because of view sent from layout.xml
-     */
+    /** Overload needed because of view sent from layout.xml */
     public void getContacts(View view){
         getContacts();
     }
@@ -60,7 +56,6 @@ public class HomeActivity extends Activity {
         /** Check the SDK version and whether the permission is already granted or not. */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
-            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overridden method
         } else {
             /** Android version is lesser than 6.0 or the permission is already granted. */
             setContentView(R.layout.activity_home);
@@ -90,6 +85,11 @@ public class HomeActivity extends Activity {
                 }
             });
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        getContacts();
     }
 
     /** Load data on background */
@@ -160,8 +160,8 @@ public class HomeActivity extends Activity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.e("searchView", "here---------------- listener");
-                    SelectUser data = selectUsers.get(i);
-                    navigateToContactInformation();
+                    SelectUser selectedUserData = selectUsers.get(i);
+                    navigateToContactInformation(selectedUserData);
                 }
             });
 
@@ -175,8 +175,9 @@ public class HomeActivity extends Activity {
         contactPhonesCursor.close();
     }
 
-    public void navigateToContactInformation(){
+    public void navigateToContactInformation(SelectUser userData){
         Intent intent = new Intent(this, ContactActivity.class);
+        intent.putExtra(USER_NAME, userData.getName());
         startActivity(intent);
     }
 }
