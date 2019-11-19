@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class NativeContentProvider extends Activity {
+public class HomeActivity extends Activity {
 
     /**
      * Request code for READ_CONTACTS. It can be any number > 0.
@@ -63,7 +63,7 @@ public class NativeContentProvider extends Activity {
             //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overridden method
         } else {
             /** Android version is lesser than 6.0 or the permission is already granted. */
-            setContentView(R.layout.nativecontentlayout);
+            setContentView(R.layout.activity_home);
 
             selectUsers = new ArrayList<>();
             popUpResolver = this.getContentResolver();
@@ -109,7 +109,7 @@ public class NativeContentProvider extends Activity {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(NativeContentProvider.this, "No contacts in your contact list.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(HomeActivity.this, "No contacts in your contact list.", Toast.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -152,7 +152,7 @@ public class NativeContentProvider extends Activity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            selectUserAdapter = new SelectUserAdapter(selectUsers, NativeContentProvider.this);
+            selectUserAdapter = new SelectUserAdapter(selectUsers, HomeActivity.this);
             contactListView.setAdapter(selectUserAdapter);
 
             /** Select item on ListClick */
