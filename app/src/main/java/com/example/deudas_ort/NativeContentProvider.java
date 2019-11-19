@@ -17,113 +17,91 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class NativeContentProvider extends Activity {
 
-    private ListView lstNames;
-
-    // Request code for READ_CONTACTS. It can be any number > 0.
+    /**
+     * Request code for READ_CONTACTS. It can be any number > 0.
+     */
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-
-    // ArrayList
-    ArrayList<SelectUser> selectUsers;
-    List<SelectUser> temp;
-    // Contact List
-    ListView listView;
-    // Cursor to load contacts list
-    Cursor phones, email;
-
-    // Pop up
-    ContentResolver resolver;
-    SearchView search;
-    SelectUserAdapter adapter;
+    private ArrayList<SelectUser> selectUsers;
+    private ListView contactListView;
+    private Cursor contactPhonesCursor;
+    private ContentResolver popUpResolver;
+    private SearchView searchView;
+    private SelectUserAdapter selectUserAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         getContacts();
-
-        Button view = (Button)findViewById(R.id.viewButton);
-
-//        view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v){
-//                //Toast.makeText(NativeContentProvider.this, "Click.", Toast.LENGTH_LONG).show();
-//                getContacts();
-//                Log.i("NativeContentProvider", "Completed Displaying Contact list");
-//            }
-//        });
     }
 
+    /**
+     * Overload needed because of view sent from layout.xml
+     */
     public void getContacts(View view){
         getContacts();
     }
+
     public void getContacts() {
-        //Toast.makeText(NativeContentProvider.this, "Click.", Toast.LENGTH_LONG).show();
-        // Check the SDK version and whether the permission is already granted or not.
+        /** Check the SDK version and whether the permission is already granted or not. */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
-            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overridden method
         } else {
-            // Android version is lesser than 6.0 or the permission is already granted.
-
+            /** Android version is lesser than 6.0 or the permission is already granted. */
             setContentView(R.layout.nativecontentlayout);
 
-            selectUsers = new ArrayList<SelectUser>();
-            resolver = this.getContentResolver();
-            listView = (ListView) findViewById(R.id.contacts_list);
+            selectUsers = new ArrayList<>();
+            popUpResolver = this.getContentResolver();
+            contactListView = findViewById(R.id.contacts_list);
+            contactPhonesCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+            searchView = findViewById(R.id.searchView);
 
-            phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
             LoadContact loadContact = new LoadContact();
             loadContact.execute();
 
-            search = (SearchView) findViewById(R.id.searchView);
-
-            //*** setOnQueryTextListener ***
-            search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
+            /** setOnQueryTextListener */
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     // TODO Auto-generated method stub
-
                     return false;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
                     // TODO Auto-generated method stub
-                    adapter.filter(newText);
+                    selectUserAdapter.filter(newText);
                     return false;
                 }
             });
         }
     }
 
-    // Load data on background
+    /** Load data on background */
     class LoadContact extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            // Get Contact list from Phone
+            /** Get Contact list from Phone */
+            if (contactPhonesCursor != null) {
+                Log.e("count", "" + contactPhonesCursor.getCount());
+                if (contactPhonesCursor.getCount() == 0) {
 
-            if (phones != null) {
-                Log.e("count", "" + phones.getCount());
-                if (phones.getCount() == 0) {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
@@ -132,16 +110,17 @@ public class NativeContentProvider extends Activity {
                     });
                 }
 
-                while (phones.moveToNext()) {
-                    Bitmap bit_thumb = null;
-                    String id = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-                    String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                    String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    String EmailAddr = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA2));
-                    String image_thumb = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI));
+                while (contactPhonesCursor.moveToNext()) {
+                    Bitmap bitMap = null;
+                    String id = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+                    String name = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                    String phoneNumber = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    String email = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA2));
+                    String imageThumb = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI));
+
                     try {
-                        if (image_thumb != null) {
-                            bit_thumb = MediaStore.Images.Media.getBitmap(resolver, Uri.parse(image_thumb));
+                        if (imageThumb != null) {
+                            bitMap = MediaStore.Images.Media.getBitmap(popUpResolver, Uri.parse(imageThumb));
                         } else {
                             Log.e("No Image Thumb", "--------------");
                         }
@@ -150,7 +129,8 @@ public class NativeContentProvider extends Activity {
                     }
 
                     SelectUser selectUser = new SelectUser();
-                    selectUser.setThumb(bit_thumb);
+
+                    selectUser.setThumb(bitMap);
                     selectUser.setName(name);
                     selectUser.setPhone(phoneNumber);
                     selectUser.setEmail(id);
@@ -160,34 +140,33 @@ public class NativeContentProvider extends Activity {
             } else {
                 Log.e("Cursor close 1", "----------------");
             }
-            //phones.close();
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            adapter = new SelectUserAdapter(selectUsers, NativeContentProvider.this);
-            listView.setAdapter(adapter);
 
-            // Select item on listclick
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            selectUserAdapter = new SelectUserAdapter(selectUsers, NativeContentProvider.this);
+            contactListView.setAdapter(selectUserAdapter);
+
+            /** Select item on ListClick */
+            contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                    Log.e("search", "here---------------- listener");
-
+                    Log.e("searchView", "here---------------- listener");
                     SelectUser data = selectUsers.get(i);
                 }
             });
 
-            listView.setFastScrollEnabled(true);
+            contactListView.setFastScrollEnabled(true);
         }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        phones.close();
+        contactPhonesCursor.close();
     }
 }
