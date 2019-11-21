@@ -22,8 +22,8 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.example.deudas_ort.data.SelectUser;
-import com.example.deudas_ort.data.SelectUserAdapter;
+import com.example.deudas_ort.data.Contact;
+import com.example.deudas_ort.data.ContactAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,12 +35,12 @@ public class HomeActivity extends Activity {
     public static final String USER_NAME = "USER_NAME";
     public static final String USER_EMAIL = "USER_EMAIL";
     public static final String USER_PHONE = "USER_PHONE";
-    private ArrayList<SelectUser> selectUsers;
+    private ArrayList<Contact> contacts;
     private ListView contactListView;
     private Cursor contactPhonesCursor;
     private ContentResolver popUpResolver;
     private SearchView searchView;
-    private SelectUserAdapter selectUserAdapter;
+    private ContactAdapter contactAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class HomeActivity extends Activity {
             /** Android version is lesser than 6.0 or the permission is already granted. */
             setContentView(R.layout.activity_home);
 
-            selectUsers = new ArrayList<>();
+            contacts = new ArrayList<>();
             popUpResolver = this.getContentResolver();
             contactListView = findViewById(R.id.contacts_list);
             contactPhonesCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
@@ -75,14 +75,12 @@ public class HomeActivity extends Activity {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    // TODO Auto-generated method stub
                     return false;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    // TODO Auto-generated method stub
-                    selectUserAdapter.filter(newText);
+                    contactAdapter.search(newText);
                     return false;
                 }
             });
@@ -122,11 +120,11 @@ public class HomeActivity extends Activity {
                     String name = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     String phoneNumber = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                     String email = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA2));
-                    String imageThumb = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI));
+                    String photoThumbnailUri = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI));
 
                     try {
-                        if (imageThumb != null) {
-                            bitMap = MediaStore.Images.Media.getBitmap(popUpResolver, Uri.parse(imageThumb));
+                        if (photoThumbnailUri != null) {
+                            bitMap = MediaStore.Images.Media.getBitmap(popUpResolver, Uri.parse(photoThumbnailUri));
                         } else {
                             Log.e("No Image Thumb", "--------------");
                         }
@@ -134,14 +132,14 @@ public class HomeActivity extends Activity {
                         e.printStackTrace();
                     }
 
-                    SelectUser selectUser = new SelectUser();
+                    Contact contact = new Contact();
 
-                    selectUser.setBitMap(bitMap);
-                    selectUser.setName(name);
-                    selectUser.setPhone(phoneNumber);
-                    selectUser.setEmail(id);
-                    selectUser.setCheckedBox(false);
-                    selectUsers.add(selectUser);
+                    contact.setBitMap(bitMap);
+                    contact.setName(name);
+                    contact.setPhone(phoneNumber);
+                    contact.setEmail(id);
+                    contact.setCheckedBox(false);
+                    contacts.add(contact);
                 }
             } else {
                 Log.e("Cursor close 1", "----------------");
@@ -154,16 +152,16 @@ public class HomeActivity extends Activity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            selectUserAdapter = new SelectUserAdapter(selectUsers, HomeActivity.this);
-            contactListView.setAdapter(selectUserAdapter);
+            contactAdapter = new ContactAdapter(contacts, HomeActivity.this);
+            contactListView.setAdapter(contactAdapter);
 
             /** Select item on ListClick */
             contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.e("searchView", "here---------------- listener");
-                    SelectUser selectedUserData = selectUsers.get(i);
-                    navigateToContactInformation(selectedUserData);
+                    Contact selectedContactData = contacts.get(i);
+                    navigateToContactInformation(selectedContactData);
                 }
             });
 
@@ -177,11 +175,11 @@ public class HomeActivity extends Activity {
         contactPhonesCursor.close();
     }
 
-    public void navigateToContactInformation(SelectUser userData){
+    public void navigateToContactInformation(Contact contactData){
         Intent intent = new Intent(this, ContactActivity.class);
-        intent.putExtra(USER_NAME, userData.getName());
-        intent.putExtra(USER_EMAIL, userData.getEmail());
-        intent.putExtra(USER_PHONE, userData.getPhone());
+        intent.putExtra(USER_NAME, contactData.getName());
+        intent.putExtra(USER_EMAIL, contactData.getEmail());
+        intent.putExtra(USER_PHONE, contactData.getPhone());
         startActivity(intent);
     }
 }

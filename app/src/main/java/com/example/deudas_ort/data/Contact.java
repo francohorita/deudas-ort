@@ -2,7 +2,7 @@ package com.example.deudas_ort.data;
 
 import android.graphics.Bitmap;
 
-public class SelectUser {
+public class Contact {
     String name;
     Bitmap bitMap;
     String phone;
