@@ -3,8 +3,6 @@ package com.example.deudas_ort;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -39,10 +37,10 @@ public class ContactActivity extends AppCompatActivity {
             String contactPhone = intent.getStringExtra(USER_PHONE);
             String photoThumbnailUri = intent.getStringExtra(USER_PHOTO_THUMBNAIL_URI);
 
-            TextView fullNameTextView = findViewById(R.id.fullName);
-            TextView phoneTextView = findViewById(R.id.phone);
-            EditText amountEditText = findViewById(R.id.amount);
-            EditText descriptionEditText = findViewById(R.id.description);
+            TextView fullNameTextView = findViewById(R.id.inputFullName);
+            TextView phoneTextView = findViewById(R.id.textViewPhone);
+            EditText amountEditText = findViewById(R.id.inputAmount);
+            EditText descriptionEditText = findViewById(R.id.inputComments);
 
             fullNameTextView.setText(contactFullName);
             phoneTextView.setText(contactPhone);
