@@ -6,8 +6,8 @@ public class Contact {
     String name;
     Bitmap bitMap;
     String phone;
-    Boolean checkedBox = false;
     String email;
+    String photoThumbnailUri;
 
     public Bitmap getBitMap() {
         return bitMap;
@@ -15,14 +15,14 @@ public class Contact {
     public String getPhone() {
         return phone;
     }
-    public Boolean getCheckedBox() {
-        return checkedBox;
-    }
     public String getName() {
         return name;
     }
     public String getEmail() {
         return email;
+    }
+    public String getPhotoThumbnailUri() {
+        return photoThumbnailUri;
     }
     public void setBitMap(Bitmap bitMap) {
         this.bitMap = bitMap;
@@ -30,13 +30,13 @@ public class Contact {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-    public void setCheckedBox(Boolean checkedBox) {
-        this.checkedBox = checkedBox;
-    }
     public void setName(String name) {
         this.name = name;
     }
     public void setEmail(String email) {
         this.email = email;
+    }
+    public void setPhotoThumbnailUri(String photoThumbnailUri) {
+        this.photoThumbnailUri = photoThumbnailUri;
     }
 }

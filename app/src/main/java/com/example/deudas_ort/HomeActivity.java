@@ -35,6 +35,7 @@ public class HomeActivity extends Activity {
     public static final String USER_NAME = "USER_NAME";
     public static final String USER_EMAIL = "USER_EMAIL";
     public static final String USER_PHONE = "USER_PHONE";
+    public static final String USER_PHOTO_THUMBNAIL_URI = "USER_PHOTO_THUMBNAIL_URI";
     private ArrayList<Contact> contacts;
     private ListView contactListView;
     private Cursor contactPhonesCursor;
@@ -137,7 +138,7 @@ public class HomeActivity extends Activity {
                     contact.setName(name);
                     contact.setPhone(phoneNumber);
                     contact.setEmail(id);
-                    contact.setCheckedBox(false);
+                    contact.setPhotoThumbnailUri(photoThumbnailUri);
                     contacts.add(contact);
                 }
             } else {
@@ -179,6 +180,7 @@ public class HomeActivity extends Activity {
         intent.putExtra(USER_NAME, contactData.getName());
         intent.putExtra(USER_EMAIL, contactData.getEmail());
         intent.putExtra(USER_PHONE, contactData.getPhone());
+        intent.putExtra(USER_PHOTO_THUMBNAIL_URI, contactData.getPhotoThumbnailUri());
         startActivity(intent);
     }
 }

@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">This is a sample to showcase the working of a native content provider - here the contacts list</string>
     <string name="app_name">Deudas ORT</string>
-    <string name="viewButton">Refresh contacts</string>
-    <string name="createButton">Add Contact</string>
-    <string name="updateButton">Modify Contact</string>
-    <string name="deleteButton">Delete Contact</string>
-    <string name="large_text">
-        "Mimimi mimimi.\n\n"
-    </string>
-    <string name="action_settings">About</string>
+
+    <string name="refreshContacts">Refresh contacts</string>
+    <string name="addContact">Add Contact</string>
+    <string name="updateContact">Modify Contact</string>
+    <string name="deleteContact">Delete Contact</string>
+
+    <string name="defaultText">Text</string>
+    <string name="thumbnailDescription">Contact Image</string>
+
+    <string name="namePlaceholder">Name: </string>
+    <string name="phonePlaceholder">Phone: </string>
+    <string name="descriptionPlaceholder">Description: </string>
+    <string name="amountPlaceholder">Amount: </string>
+
+    <string name="large_text">Large Text</string>
+    <string name="about">About</string>
 </resources>

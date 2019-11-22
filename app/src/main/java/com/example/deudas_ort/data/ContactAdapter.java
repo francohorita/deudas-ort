@@ -75,7 +75,7 @@ public class ContactAdapter extends BaseAdapter {
         /** Set contact or default photo */
         try {
             /** Loading default photo */
-            Bitmap photoThumbnailBitMap = BitmapFactory.decodeResource(appView.getResources(), R.drawable.image); //
+            Bitmap photoThumbnailBitMap = BitmapFactory.decodeResource(appView.getResources(), R.drawable.image);
             if (data.getBitMap() != null) {
                 photoThumbnailBitMap = data.getBitMap();
             }

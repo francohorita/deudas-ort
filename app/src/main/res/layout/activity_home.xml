@@ -5,7 +5,7 @@ android:layout_width="fill_parent"
 android:layout_height="fill_parent"
     >
     <Button
-        android:text="@string/viewButton"
+        android:text="@string/refreshContacts"
         android:id="@+id/viewButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
