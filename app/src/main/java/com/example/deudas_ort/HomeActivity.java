@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -61,6 +62,14 @@ public class HomeActivity extends Activity {
         } else {
             /** Android version is lesser than 6.0 or the permission is already granted. */
             setContentView(R.layout.activity_home);
+            final SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
+            pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getContacts();
+                    pullToRefresh.setRefreshing(false);
+                }
+            });
 
             contacts = new ArrayList<>();
             popUpResolver = this.getContentResolver();

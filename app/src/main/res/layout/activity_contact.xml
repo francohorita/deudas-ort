@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayoutCompleto"
@@ -194,7 +194,6 @@
                 android:layout_marginTop="25dp"
                 android:ems="10"
                 android:hint="@string/inputComments"
-                android:inputType="numberDecimal"
                 android:text="@string/inputComments"
                 app:layout_constraintBottom_toTopOf="@+id/buttonSave"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -231,4 +230,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

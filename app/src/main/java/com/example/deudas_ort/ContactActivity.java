@@ -96,7 +96,7 @@ public class ContactActivity extends AppCompatActivity {
         try {
             DBContactos db = new DBContactos(this);
             db.open();
-            Map<String, String> data = db.getData("1");
+            Map<String, String> data = db.getData(contactUserEmail);
             if (data.isEmpty()) {
                 db.insert(contactUserEmail, textName, contactUserEmail, textPhone, textAmount, textDescription);
                 db.close();
