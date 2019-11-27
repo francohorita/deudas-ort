@@ -10,11 +10,20 @@
     <string name="defaultText">Text</string>
     <string name="thumbnailDescription">Contact Image</string>
 
-    <string name="namePlaceholder">Name: </string>
-    <string name="phonePlaceholder">Phone: </string>
-    <string name="descriptionPlaceholder">Description: </string>
-    <string name="amountPlaceholder">Amount: </string>
+    <string name="textViewName">Name: </string>
+    <string name="textViewPhone">Phone: </string>
+    <string name="textViewAmount">Amount: </string>
+    <string name="textViewComments">Comments: </string>
 
     <string name="large_text">Large Text</string>
     <string name="about">About</string>
+
+    <string name="inputFullName">Name</string>
+    <string name="inputPhone">Phone</string>
+    <string name="inputAmount"></string>
+    <string name="inputComments"></string>
+
+    <string name="contactPhoto">Contact Photo</string>
+
+    <string name="buttonSave">Save</string>
 </resources>

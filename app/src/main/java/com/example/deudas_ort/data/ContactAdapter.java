@@ -63,8 +63,8 @@ public class ContactAdapter extends BaseAdapter {
 
         viewWrapper = new ViewWrapper();
 
-        viewWrapper.fullName = appView.findViewById(R.id.fullName);
-        viewWrapper.phone = appView.findViewById(R.id.phone);
+        viewWrapper.fullName = appView.findViewById(R.id.inputFullName);
+        viewWrapper.phone = appView.findViewById(R.id.textViewPhone);
         viewWrapper.imageView = appView.findViewById(R.id.photo);
 
         final Contact data = contacts.get(i);
