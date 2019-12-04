@@ -84,7 +84,7 @@ public class ContactAdapter extends BaseAdapter {
             roundedThumbnailPhoto = new RoundImage(photoThumbnailBitMap);
             viewWrapper.imageView.setImageDrawable(roundedThumbnailPhoto);
         } catch (OutOfMemoryError e) {
-            // Add default picture
+            /** Add default picture */
             viewWrapper.imageView.setImageDrawable(this.context.getDrawable(R.drawable.image));
             e.printStackTrace();
         }

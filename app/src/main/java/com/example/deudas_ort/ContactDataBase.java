@@ -9,8 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DBContactos {
-    // Nombre columnas
+public class ContactDataBase {
+    /** Column names */
     public static final String KEY_FILA_ID = "_id";
     public static final String KEY_FILA_NAME = "_name";
     public static final String KEY_FILA_EMAIL = "_email";
@@ -18,32 +18,32 @@ public class DBContactos {
     public static final String KEY_FILA_AMOUNT = "_amount";
     public static final String KEY_FILA_DESCRIPTION = "_description";
 
-    // Datos de la tabla
+    /** DataBase Credentials */
     private final String DB_NAME = "DBContactos";
     private final String DB_TABLE_NAME = "TableContacts";
     private final int DATABASE_VERSION = 3;
 
-    // Parametros
+    /** Properties */
     private DBHelper ourHelper;
     private final Context ourContext;
     private SQLiteDatabase ourDatabase;
 
-    // Constructor
-    public DBContactos(Context context) {
+    /** Constructor */
+    public ContactDataBase(Context context) {
         ourContext = context;
     }
 
-    // Clase privada DBHelper
+    /** DBHelper private Class */
     private class DBHelper extends SQLiteOpenHelper {
-        // Constructor
+        /** Constructor */
         public DBHelper(Context context) {
             super(context, DB_NAME, null, DATABASE_VERSION);
         }
 
-        // Creación de la tabla
+        /** Create table */
         @Override
         public void onCreate(SQLiteDatabase sqLiteDatabase) {
-            // Database creation sql statement
+            /** Database Creation SQL Statement */
             String sqlCode= "CREATE TABLE " + DB_TABLE_NAME + "( " + KEY_FILA_ID + " TEXT PRIMARY KEY, " +
                     KEY_FILA_NAME + " TEXT NOT NULL, " + KEY_FILA_EMAIL + " TEXT NOT NULL, " + KEY_FILA_PHONE + " TEXT NOT NULL, "
                     + KEY_FILA_AMOUNT + " TEXT NOT NULL, " + KEY_FILA_DESCRIPTION + " TEXT NOT NULL );";
@@ -58,7 +58,7 @@ public class DBContactos {
         }
     }
 
-    public DBContactos open() throws SQLException {
+    public ContactDataBase open() throws SQLException {
         ourHelper = new DBHelper(ourContext);
         ourDatabase = ourHelper.getWritableDatabase();
         return this;

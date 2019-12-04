@@ -35,6 +35,7 @@ public class HomeActivity extends Activity {
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public static final String USER_NAME = "USER_NAME";
     public static final String USER_EMAIL = "USER_EMAIL";
+    public static final String CONTACT_ID = "CONTACT_ID";
     public static final String USER_PHONE = "USER_PHONE";
     public static final String USER_PHOTO_THUMBNAIL_URI = "USER_PHOTO_THUMBNAIL_URI";
     private ArrayList<Contact> contacts;
@@ -55,19 +56,22 @@ public class HomeActivity extends Activity {
         getContacts();
     }
 
+    /** Get Contacts logic */
     public void getContacts() {
         /** Check the SDK version and whether the permission is already granted or not. */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
         } else {
+
             /** Android version is lesser than 6.0 or the permission is already granted. */
             setContentView(R.layout.activity_home);
+
+            /** SwipeRefreshLayout instance and RefreshListener */
             final SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
             pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getContacts();
-                    pullToRefresh.setRefreshing(false);
+                getContacts();
                 }
             });
 
@@ -80,7 +84,7 @@ public class HomeActivity extends Activity {
             LoadContact loadContact = new LoadContact();
             loadContact.execute();
 
-            /** setOnQueryTextListener */
+            /** SearchView setOnQueryTextListener */
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -103,6 +107,7 @@ public class HomeActivity extends Activity {
 
     /** Load data on background */
     class LoadContact extends AsyncTask<Void, Void, Void> {
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -110,19 +115,23 @@ public class HomeActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... voids) {
+
             /** Get Contact list from Phone */
             if (contactPhonesCursor != null) {
-                Log.e("count", "" + contactPhonesCursor.getCount());
-                if (contactPhonesCursor.getCount() == 0) {
 
+                Log.e("count", "" + contactPhonesCursor.getCount());
+
+                /** No contacts found */
+                if (contactPhonesCursor.getCount() == 0) {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(HomeActivity.this, "No contacts in your contact list.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(HomeActivity.this, "No contacts in your contact list.", Toast.LENGTH_LONG).show();
                         }
                     });
                 }
 
+                /** Iterating through the contacts brought from the Android Contact Resource */
                 while (contactPhonesCursor.moveToNext()) {
                     Bitmap bitMap = null;
                     String id = contactPhonesCursor.getString(contactPhonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
@@ -146,7 +155,7 @@ public class HomeActivity extends Activity {
                     contact.setBitMap(bitMap);
                     contact.setName(name);
                     contact.setPhone(phoneNumber);
-                    contact.setEmail(id);
+                    contact.setContactId(id);
                     contact.setPhotoThumbnailUri(photoThumbnailUri);
                     contacts.add(contact);
                 }
@@ -168,9 +177,9 @@ public class HomeActivity extends Activity {
             contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Log.e("searchView", "here---------------- listener");
-                    Contact selectedContactData = contacts.get(i);
-                    navigateToContactInformation(selectedContactData);
+                Log.e("searchView", "here---------------- listener");
+                Contact selectedContactData = contacts.get(i);
+                navigateToContactInformation(selectedContactData);
                 }
             });
 
@@ -187,7 +196,7 @@ public class HomeActivity extends Activity {
     public void navigateToContactInformation(Contact contactData){
         Intent intent = new Intent(this, ContactActivity.class);
         intent.putExtra(USER_NAME, contactData.getName());
-        intent.putExtra(USER_EMAIL, contactData.getEmail());
+        intent.putExtra(CONTACT_ID, contactData.getContactId());
         intent.putExtra(USER_PHONE, contactData.getPhone());
         intent.putExtra(USER_PHOTO_THUMBNAIL_URI, contactData.getPhotoThumbnailUri());
         startActivity(intent);

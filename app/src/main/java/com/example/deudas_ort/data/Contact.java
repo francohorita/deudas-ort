@@ -8,6 +8,7 @@ public class Contact {
     String phone;
     String email;
     String photoThumbnailUri;
+    String contactId;
 
     public Bitmap getBitMap() {
         return bitMap;
@@ -20,6 +21,9 @@ public class Contact {
     }
     public String getEmail() {
         return email;
+    }
+    public String getContactId() {
+        return contactId;
     }
     public String getPhotoThumbnailUri() {
         return photoThumbnailUri;
@@ -35,6 +39,9 @@ public class Contact {
     }
     public void setEmail(String email) {
         this.email = email;
+    }
+    public void setContactId(String contactId) {
+        this.contactId = contactId;
     }
     public void setPhotoThumbnailUri(String photoThumbnailUri) {
         this.photoThumbnailUri = photoThumbnailUri;
