@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Deudas ORT</string>
+    <string name="app_name">Tus Deudas</string>
 
     <string name="refreshContacts">Refresh contacts</string>
     <string name="addContact">Add Contact</string>
