@@ -15,38 +15,41 @@ android:layout_height="fill_parent"
     </Button-->
 
     <FrameLayout
+        android:id="@+id/frag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#5b74a8"
-        android:id="@+id/frag">
+        android:background="@color/colorPrimary">
 
         <TextView
             android:id="@+id/srchHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="Search.."
-            android:textSize="16dp"
             android:textColor="#000"
-            android:layout_gravity="center" />
+            android:textSize="16dp" />
 
         <SearchView
-            android:background="#5b74a8"
-            android:padding="8dp"
             android:id="@+id/searchView"
-            android:drawableLeft="@android:drawable/ic_menu_search"
             android:layout_width="wrap_content"
-            android:singleLine="true"
+            android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:layout_height="wrap_content"></SearchView>
+            android:background="@color/colorAccent"
+            android:drawableLeft="@android:drawable/ic_menu_search"
+            android:padding="8dp"
+            android:singleLine="true"></SearchView>
     </FrameLayout>
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/pullToRefresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/colorBackground">
+
         <ListView
-            android:layout_below="@+id/frag"
+            android:id="@+id/contacts_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/contacts_list"></ListView>
+            android:layout_below="@+id/frag"></ListView>
     </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>
